@@ -1,0 +1,50 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:campus_connect}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+  jackson:
+    deserialization:
+      accept-empty-string-as-null-object: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+  public-base-url: ${PUBLIC_BASE_URL:http://localhost:8080}
+  upload-dir: ${UPLOAD_DIR:uploads}
+  # comma separated, e.g. "student.myuni.edu,myuni.ac.in" -> those emails get the "Verified student" badge
+  verified-domains: ${VERIFIED_DOMAINS:}
+  daily-request-limit: 10
+  decline-cooldown-days: 7
+  jwt:
+    secret: ${JWT_SECRET:change-this-to-a-long-random-string-at-least-32-chars-long!}
+    expiration-hours: 168
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:}
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
+#  whatsapp:
+#  this has been disabled for now, as the WhatsApp Cloud API is not free and requires a verified business account
+#    mode: ${WHATSAPP_MODE:log}      # log = only print to console (dev), cloud = Meta WhatsApp Cloud API
+#    phone-number-id: ${WHATSAPP_PHONE_NUMBER_ID:}
+#    access-token: ${WHATSAPP_ACCESS_TOKEN:}
+#    template-name: ${WHATSAPP_TEMPLATE:connection_request}
+#    language: ${WHATSAPP_TEMPLATE_LANG:en}
