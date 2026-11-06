@@ -7,8 +7,8 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
   mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
     properties:
@@ -49,5 +49,5 @@ app:
 #    template-name: ${WHATSAPP_TEMPLATE:connection_request}
 #    language: ${WHATSAPP_TEMPLATE_LANG:en}
   mail:
-    enabled: ${MAIL_ENABLED}    # false = only log the email in the console (dev), later will set it up to true to send real emails
+    enabled: ${MAIL_ENABLED}
     from: ${MAIL_FROM}
