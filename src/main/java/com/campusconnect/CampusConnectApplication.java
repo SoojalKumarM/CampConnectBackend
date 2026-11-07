@@ -7,7 +7,11 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 @EnableAsync
 public class CampusConnectApplication {
-    public static void main(String[] args) {
+
+    public static void main(String[] args)
+
+    {
         SpringApplication.run(CampusConnectApplication.class, args);
     }
+
 }
