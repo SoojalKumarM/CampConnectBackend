@@ -1,50 +1,43 @@
 package com.campusconnect.service;
 
-import com.campusconnect.config.AppProperties;
 import com.campusconnect.exception.ApiException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.Map;
-import java.util.UUID;
 
-@Service
-@RequiredArgsConstructor
-public class FileStorageService {
-    private static final Map<String, String> TYPES = Map.of(
-            "image/jpeg", ".jpg", "image/png", ".png", "image/webp", ".webp");
-    private final AppProperties props;
+/**
+ * Where profile photos live. The rest of the app only knows this interface (Strategy pattern):
+ *  - LocalFileStorageService      -> files on this server's disk (development only)
+ *  - CloudinaryFileStorageService -> files in Cloudinary (production; survives redeploys)
+ * Chosen by the property app.storage.provider (env STORAGE_PROVIDER = local | cloudinary).
+ *
+ * The value returned by storeImage() is saved in the database: either "/uploads/x.jpg" (local)
+ * or a full "https://res.cloudinary.com/..." URL. ProfileMapper.abs() handles both.
+ */
+public interface FileStorageService {
 
-    /** Stores an image and returns its relative URL, e.g. /uploads/uuid.jpg */
-    public String storeImage(MultipartFile file) {
+    /** Validates and stores the image, returns the URL/path to save in the database. */
+    String storeImage(MultipartFile file);
+
+    /** Best-effort delete; must never throw (a failed cleanup must not break the user's action). */
+    void deleteQuietly(String storedUrl);
+
+    /**
+     * Security: the Content-Type header is controlled by the client, so we check the file's
+     * real "magic bytes" instead. Returns the extension (.jpg/.png/.webp) or rejects the file.
+     */
+    default String validateAndGetExtension(MultipartFile file) {
         if (file == null || file.isEmpty()) throw ApiException.bad("Please choose a photo");
-        String ext = TYPES.get(file.getContentType());
-        if (ext == null) throw ApiException.bad("Only JPG, PNG or WEBP photos are allowed");
-        try {
-            Path dir = Path.of(props.getUploadDir()).toAbsolutePath();
-            Files.createDirectories(dir);
-            String name = UUID.randomUUID() + ext;
-            try (InputStream in = file.getInputStream()) {
-                Files.copy(in, dir.resolve(name), StandardCopyOption.REPLACE_EXISTING);
-            }
-            return "/uploads/" + name;
+        try (InputStream in = file.getInputStream()) {
+            byte[] h = in.readNBytes(12);
+            if (h.length >= 3 && (h[0] & 0xFF) == 0xFF && (h[1] & 0xFF) == 0xD8 && (h[2] & 0xFF) == 0xFF) return ".jpg";
+            if (h.length >= 4 && (h[0] & 0xFF) == 0x89 && h[1] == 'P' && h[2] == 'N' && h[3] == 'G') return ".png";
+            if (h.length >= 12 && h[0] == 'R' && h[1] == 'I' && h[2] == 'F' && h[3] == 'F'
+                    && h[8] == 'W' && h[9] == 'E' && h[10] == 'B' && h[11] == 'P') return ".webp";
         } catch (IOException e) {
-            throw new ApiException(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, "Could not save photo");
+            throw ApiException.bad("Could not read the photo");
         }
-    }
-
-    public void deleteQuietly(String relativeUrl) {
-        try {
-            if (relativeUrl != null && relativeUrl.startsWith("/uploads/")) {
-                String name = Path.of(relativeUrl).getFileName().toString();
-                Files.deleteIfExists(Path.of(props.getUploadDir()).toAbsolutePath().resolve(name));
-            }
-        } catch (Exception ignored) { }
+        throw ApiException.bad("Only real JPG, PNG or WEBP photos are allowed");
     }
 }

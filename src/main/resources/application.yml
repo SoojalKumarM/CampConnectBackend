@@ -42,7 +42,7 @@ app:
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
 #  whatsapp:
-#  this has been disabled for now, as the WhatsApp Cloud API is not free and requires a verified business account
+##  this has been disabled for now, as the WhatsApp Cloud API is not free and requires a verified business account
 #    mode: ${WHATSAPP_MODE:log}      # log = only print to console (dev), cloud = Meta WhatsApp Cloud API
 #    phone-number-id: ${WHATSAPP_PHONE_NUMBER_ID:}
 #    access-token: ${WHATSAPP_ACCESS_TOKEN:}
@@ -51,3 +51,13 @@ app:
   mail:
     enabled: ${MAIL_ENABLED}
     from: ${MAIL_FROM}
+
+
+
+    storage:
+      provider: ${STORAGE_PROVIDER:local}      # local = ./uploads (dev only) | cloudinary = production
+      cloudinary:
+        cloud-name: ${CLOUDINARY_CLOUD_NAME:}
+        api-key: ${CLOUDINARY_API_KEY:}
+        api-secret: ${CLOUDINARY_API_SECRET:}
+        folder: campus-connect

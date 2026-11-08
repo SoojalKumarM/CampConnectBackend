@@ -22,8 +22,11 @@ public class AppProperties {
     private Cors cors = new Cors();
     private Whatsapp whatsapp = new Whatsapp();
     private Mail mail = new Mail();
+    private Storage storage = new Storage();
 
     @Data public static class Jwt { private String secret; private long expirationHours = 168; }
+    @Data public static class Storage { private String provider = "local"; private Cloudinary cloudinary = new Cloudinary(); }
+    @Data public static class Cloudinary { private String cloudName; private String apiKey; private String apiSecret; private String folder = "campus-connect"; }
     @Data public static class Mail { private boolean enabled = false; private String from; }
     @Data public static class Google { private String clientId; }
     @Data public static class Cors { private List<String> allowedOrigins = new ArrayList<>(); }
