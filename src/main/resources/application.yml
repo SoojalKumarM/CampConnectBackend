@@ -19,7 +19,7 @@ spring:
       accept-empty-string-as-null-object: true
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     open-in-view: false
   servlet:
     multipart:
