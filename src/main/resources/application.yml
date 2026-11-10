@@ -1,6 +1,7 @@
 server:
   port: 8080
-
+  SPRING_SECURITY_USER_NAME: ${SPRING_SECURITY_USER_NAME:admin}
+  SPRING_SECURITY_USER_PASSWORD: ${SPRING_SECURITY_USER_PASSWORD:}
 spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:campus_connect}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
@@ -44,12 +45,12 @@ app:
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
 #  whatsapp:
-##  this has been disabled for now, as the WhatsApp Cloud API is not free and requires a verified business account
-#    mode: ${WHATSAPP_MODE:log}      # log = only print to console (dev), cloud = Meta WhatsApp Cloud API
-#    phone-number-id: ${WHATSAPP_PHONE_NUMBER_ID:}
-#    access-token: ${WHATSAPP_ACCESS_TOKEN:}
-#    template-name: ${WHATSAPP_TEMPLATE:connection_request}
-#    language: ${WHATSAPP_TEMPLATE_LANG:en}
+
+    mode: ${WHATSAPP_MODE:log}      # log = only print to console (dev), cloud = Meta WhatsApp Cloud API
+    phone-number-id: ${WHATSAPP_PHONE_NUMBER_ID:}
+    access-token: ${WHATSAPP_ACCESS_TOKEN:}
+    template-name: ${WHATSAPP_TEMPLATE:connection_request}
+    language: ${WHATSAPP_TEMPLATE_LANG:en}
   mail:
     enabled: ${MAIL_ENABLED:true}
     from: ${MAIL_FROM:}
